@@ -1,0 +1,10 @@
+{
+  "name": "global-pulse-news",
+  "compatibility_date": "2024-11-30",
+  "assets": {
+    "directory": "./dist"
+  },
+  "observability": {
+    "enabled": true
+  }
+}
