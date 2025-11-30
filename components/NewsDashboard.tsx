@@ -85,14 +85,14 @@ export const NewsDashboard: React.FC = () => {
     if (contentRef.current) {
       setGeneratingImg(true);
       try {
-        // We use a filter to exclude <img> tags (favicons) because they cause CORS issues
-        // when drawing to canvas if the server doesn't provide correct headers.
+        // Fix: Explicitly type node as HTMLElement and safely check for tagName
         const dataUrl = await toPng(contentRef.current, { 
           cacheBust: true, 
           backgroundColor: '#0f172a',
-          filter: (node) => {
+          filter: (node: HTMLElement) => {
             // Filter out img tags to avoid Tainted Canvas errors from external favicons
-            if (node.tagName === 'IMG') {
+            // Also check if tagName exists to prevent runtime errors on non-element nodes
+            if (node.tagName && node.tagName.toUpperCase() === 'IMG') {
                 return false;
             }
             return true;
