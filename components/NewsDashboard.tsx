@@ -19,6 +19,7 @@ export const NewsDashboard: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [nextUpdate, setNextUpdate] = useState<string>('');
+  const [generatingImg, setGeneratingImg] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   const loadNews = async (region: Region) => {
@@ -82,15 +83,30 @@ export const NewsDashboard: React.FC = () => {
 
   const handleDownloadImage = async () => {
     if (contentRef.current) {
+      setGeneratingImg(true);
       try {
-        const dataUrl = await toPng(contentRef.current, { cacheBust: true, backgroundColor: '#0f172a' });
+        // We use a filter to exclude <img> tags (favicons) because they cause CORS issues
+        // when drawing to canvas if the server doesn't provide correct headers.
+        const dataUrl = await toPng(contentRef.current, { 
+          cacheBust: true, 
+          backgroundColor: '#0f172a',
+          filter: (node) => {
+            // Filter out img tags to avoid Tainted Canvas errors from external favicons
+            if (node.tagName === 'IMG') {
+                return false;
+            }
+            return true;
+          }
+        });
         const link = document.createElement('a');
         link.download = `global-pulse-${activeRegion}-${new Date().toISOString().slice(0,10)}.png`;
         link.href = dataUrl;
         link.click();
       } catch (err) {
         console.error('Failed to generate image', err);
-        alert("图片生成失败，请重试。");
+        alert("图片生成失败 (CORS Error)。建议尝试使用系统截图功能。");
+      } finally {
+        setGeneratingImg(false);
       }
     }
   };
@@ -195,12 +211,16 @@ export const NewsDashboard: React.FC = () => {
           <div className="flex items-center gap-3">
              <button
                 onClick={handleDownloadImage}
-                disabled={loading || !news}
-                className="hidden sm:flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700 transition-all text-sm font-medium"
+                disabled={loading || !news || generatingImg}
+                className="hidden sm:flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700 transition-all text-sm font-medium disabled:opacity-50"
                 title="下载为图片"
               >
-                <Download className="w-4 h-4" />
-                <span>下载简报</span>
+                {generatingImg ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                ) : (
+                    <Download className="w-4 h-4" />
+                )}
+                <span>{generatingImg ? '生成中...' : '下载简报'}</span>
               </button>
 
               <button
