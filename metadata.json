@@ -1,5 +1,5 @@
 {
-  "name": "全球脉动 | AI News",
-  "description": "由 Gemini AI 驱动的全球热搜聚合平台。支持25条热点分析、Treemap热力图表、图片简报下载及每日早上6点(CST)自动更新。",
+  "name": "全球热搜早报 (Global Daily Brief)",
+  "description": "基于 Gemini AI 的全球新闻自动聚合平台，每日北京时间早晨 6 点自动更新，覆盖中国及全球核心热点。",
   "requestFramePermissions": []
 }
