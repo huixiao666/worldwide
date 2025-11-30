@@ -1,3 +1,4 @@
+
 export interface NewsSource {
   title: string;
   uri: string;
@@ -15,10 +16,3 @@ export interface NewsResponse {
 }
 
 export type Region = 'Global' | 'China' | 'Tech' | 'Finance' | 'Sports';
-
-export interface GroundingChunk {
-  web?: {
-    uri: string;
-    title: string;
-  };
-}
